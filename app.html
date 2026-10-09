@@ -5,16 +5,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Route Planner を開く</title>
-<meta http-equiv="refresh" content="0; url=https://choice-adventures-eugene-result.trycloudflare.com/">
 <link rel="stylesheet" href="style.css">
-<script>location.replace("https://choice-adventures-eugene-result.trycloudflare.com/");</script>
 </head>
 <body>
 <main class="wrap">
   <h1>Route Planner</h1>
-  <p>アプリに移動しています。自動で移動しない場合は、<a href="https://choice-adventures-eugene-result.trycloudflare.com/">こちらを押してください</a>。</p>
-  <p class="muted">開けないときは、アプリを公開していない時間です。</p>
+  <p id="status">アプリに移動しています…</p>
+  <noscript><p>JavaScript を有効にしてください。</p></noscript>
   <p><a href="index.html">Route Planner について</a></p>
 </main>
+<script>
+// 行き先（トンネルの住所）は target.json に書いてある。
+// GitHub Pages は同じ住所のファイルを最大10分キャッシュするので、毎回ちがう ?t= を付けて最新を読む
+(async () => {
+  const status = document.getElementById("status");
+  try {
+    const res = await fetch("target.json?t=" + Date.now(), { cache: "no-store" });
+    const { url } = await res.json();
+    if (!/^https:\/\/[a-z0-9-]+\.trycloudflare\.com$/.test(url)) throw new Error("bad url");
+    status.innerHTML = '自動で移動しない場合は、<a id="go">こちらを押してください</a>。';
+    document.getElementById("go").href = url + "/";
+    location.replace(url + "/");
+  } catch {
+    status.textContent = "今はアプリを公開していない時間です。時間をおいて、もう一度開いてください。";
+  }
+})();
+</script>
 </body>
 </html>
